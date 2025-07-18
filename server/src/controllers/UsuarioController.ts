@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UsuarioService } from "../services/UsuariosService";
+import { criarUsuarioDTO, criarContaFamiliaDTO } from "../DTOs/usuarioDTO";
 
 const usuarioService = new UsuarioService();
 
@@ -9,13 +10,22 @@ export class UsuarioController {
     res: Response
   ): Promise<Response> {
     try {
-      const dados = req.body;
-      if (!dados.email || !dados.senha || !dados.cpf || !dados.nome_paciente) {
+      const dadosCompletos: criarUsuarioDTO & criarContaFamiliaDTO = req.body;
+      if (!dadosCompletos.email || !dadosCompletos.senha || !dadosCompletos.cpf || !dadosCompletos.nome_paciente) {
         return res
           .status(400)
           .json({ message: "Dados essenciais estão faltando." });
       }
-      const resultado = await usuarioService.criarContaFamilia(dados);
+
+      const DTOUsuario: criarUsuarioDTO = {
+        email: dadosCompletos.email,
+        senha: dadosCompletos.senha,
+      };
+      const DTOPaciente: criarContaFamiliaDTO = dadosCompletos;
+      const resultado = await usuarioService.criarContaFamilia(
+        DTOUsuario,
+        DTOPaciente
+      );
 
       return res.status(201).json(resultado);
     } catch (error: any) {
