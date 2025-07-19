@@ -19,12 +19,11 @@ interface criarContaProfissionalDTO {
   nome: string;
   cpf: string;
   telefone: criarTelefoneDTO;
-  formacoes: number[]; // Array para armazenar o(s) ID(s) da(s) formação(ões) do profissional.
-  especialidades: number[]; // Array para armazenar o(s) ID(s) da(s) especialidade(s) do profissional.
+  formacoes: string[]; // Array para armazenar a(s) formação(ões) do profissional.
+  especialidades: string[]; // Array para armazenar a(s) especialidade(s) do profissional.
   numero_registro: string;
   tipo_registro: profissionais_tipo_registro;
   uf_registro: string;
-  descricao: string;
   endereco: criarEnderecoDTO;
 }
 

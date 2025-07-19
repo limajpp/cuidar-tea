@@ -87,4 +87,80 @@ export class UsuarioService {
       return { usuario: usuarioSeguro, paciente: novoPaciente };
     });
   }
+
+  public async criarContaProfissional(
+    DTOUsuario: criarUsuarioDTO,
+    DTOProfissional: criarContaProfissionalDTO
+  ) {
+    const emailExistente = await prisma.usuarios.findUnique({
+      where: { email: DTOUsuario.email },
+    });
+    if (emailExistente) throw new Error("Este e-mail já está em uso.");
+
+    const cpfExistente = await prisma.profissionais.findUnique({
+      where: { cpf: DTOProfissional.cpf },
+    });
+    if (cpfExistente) throw new Error("Este CPF já está cadastrado.");
+
+    const senhaHash = await bcrypt.hash(DTOUsuario.senha, 8);
+    return prisma.$transaction(async (tx) => {
+      const novoUsuario = await tx.usuarios.create({
+        data: {
+          email: DTOUsuario.email,
+          senha: senhaHash,
+        },
+      });
+
+      const novoEndereco = await tx.enderecos.create({
+        data: {
+          ...DTOProfissional.endereco,
+        },
+      });
+
+      const novoProfissional = await tx.profissionais.create({
+        data: {
+          usuarios_id_usuario: novoUsuario.id_usuario,
+          enderecos_id_endereco: novoEndereco.id_endereco,
+          nome: DTOProfissional.nome,
+          cpf: DTOProfissional.cpf,
+          tipo_registro: DTOProfissional.tipo_registro,
+          numero_registro: DTOProfissional.numero_registro,
+          uf_registro: DTOProfissional.uf_registro,
+
+          // Procura pela especialidade na tabela. Caso já exista, resgata a existente. Do contrário, apenas cria uma nova.
+          profissional_especialidades: {
+            create: DTOProfissional.especialidades.map((nomeEspecialidade) => ({
+              especialidades: {
+                connectOrCreate: {
+                  where: { nome_especialidade: nomeEspecialidade },
+                  create: { nome_especialidade: nomeEspecialidade },
+                },
+              },
+            })),
+          },
+          // Procura pela formação na tabela. Caso já exista, resgata a existente. Do contrário, apenas cria uma nova.
+          profissional_formacoes: {
+            create: DTOProfissional.formacoes.map((nomeFormacao) => ({
+              formacoes: {
+                connectOrCreate: {
+                  where: { formacao: nomeFormacao },
+                  create: { formacao: nomeFormacao },
+                },
+              },
+            })),
+          },
+        },
+      });
+
+      await tx.telefones.create({
+        data: {
+          usuarios_id_usuario: novoUsuario.id_usuario,
+          ...DTOProfissional.telefone,
+        },
+      });
+
+      const { senha, ...usuarioSeguro } = novoUsuario;
+      return { usuario: usuarioSeguro, profissional: novoProfissional };
+    });
+  }
 }
