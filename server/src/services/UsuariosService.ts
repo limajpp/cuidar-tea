@@ -1,5 +1,5 @@
 import { PrismaClient } from "../generated/prisma";
-import bcrypt from "bcrypt";
+import hashPassword from "../utils/passwordutils";
 import {
   criarUsuarioDTO,
   criarContaProfissionalDTO,
@@ -23,7 +23,7 @@ export class UsuarioService {
     });
     if (cpfExistente) throw new Error("Este CPF já está cadastrado.");
 
-    const senhaHash = await bcrypt.hash(DTOUsuario.senha, 8);
+    const senhaHash = await hashPassword(DTOUsuario.senha);
     return prisma.$transaction(async (tx) => {
       const novoUsuario = await tx.usuarios.create({
         data: {
@@ -102,7 +102,7 @@ export class UsuarioService {
     });
     if (cpfExistente) throw new Error("Este CPF já está cadastrado.");
 
-    const senhaHash = await bcrypt.hash(DTOUsuario.senha, 8);
+    const senhaHash = await hashPassword(DTOUsuario.senha);
     return prisma.$transaction(async (tx) => {
       const novoUsuario = await tx.usuarios.create({
         data: {
