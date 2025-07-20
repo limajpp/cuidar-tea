@@ -1,7 +1,11 @@
 import { z } from "zod";
-import { telefones_tipo, pacientes_nivel_tea } from "../generated/prisma";
+import {
+  telefones_tipo,
+  pacientes_nivel_tea,
+  profissionais_tipo_registro,
+} from "../generated/prisma";
 
-const telefoneSchema = z.object({
+const telefonesSchema = z.object({
   ddd: z.string().length(2, "O DDD deve ter 2 dígitos."),
   numero: z
     .string()
@@ -9,7 +13,7 @@ const telefoneSchema = z.object({
   tipo: z.enum(telefones_tipo),
 });
 
-const enderecoSchema = z.object({
+const enderecosSchema = z.object({
   cep: z
     .string()
     .min(8, "O CEP é obrigatório e deve ter pelo menos 8 dígitos."),
@@ -37,8 +41,8 @@ export const criarContaFamiliaSchema = z.object({
       nome_paciente: z
         .string()
         .min(1, { message: "O nome do paciente é obrigatório." }),
-      telefone: telefoneSchema,
-      endereco: enderecoSchema,
+      telefone: telefonesSchema,
+      endereco: enderecosSchema,
       e_titular: z.boolean(),
       data_nascimento: z
         .string()
@@ -64,6 +68,41 @@ export const criarContaFamiliaSchema = z.object({
     }),
 });
 
-export type CriarContaFamiliaDTO = z.infer<
-  typeof criarContaFamiliaSchema
+export const criarContaProfissionalSchema = z.object({
+  body: z.object({
+    email: z
+      .string()
+      .min(1, { message: "O e-mail é obrigatório." })
+      .email("O formato de e-mail está inválido."),
+    senha: z.string().min(8, "A senha deve ter no mínimo 8 caracteres."),
+    nome: z
+      .string()
+      .min(1, { message: "O nome do profissional é obrigatório." }),
+    cpf: z.string().min(11, {
+      message: "O CPF é obrigatório e deve ter no mínimo 11 dígitos.",
+    }),
+    telefone: telefonesSchema,
+    formacoes: z.array(
+      z.string().min(1, { message: "A formação não pode ser vazia." })
+    ),
+    especialidades: z.array(
+      z.string().min(1, { message: "A especialidade não pode ser vazia." })
+    ),
+    // Adicionar validação mais robusta para o número de registro.
+    numero_registro: z
+      .string()
+      .min(1, { message: "O número do seu registro é obrigatório." }),
+    tipo_registro: z.enum(profissionais_tipo_registro),
+    uf_registro: z.string().length(2, {
+      message: "A UF é obrigatória e deve ser uma sigla de 2 letras.",
+    }),
+    endereco: enderecosSchema,
+  }),
+});
+
+type CriarContaFamiliaSchema = z.infer<typeof criarContaFamiliaSchema>["body"];
+type CriarContaProfissionalSchema = z.infer<
+  typeof criarContaProfissionalSchema
 >["body"];
+
+export { CriarContaFamiliaSchema, CriarContaProfissionalSchema };
