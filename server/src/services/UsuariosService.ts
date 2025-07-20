@@ -2,7 +2,7 @@ import {
   PrismaClient,
   pacientes_nivel_tea,
   telefones_tipo,
-} from "../generated/prisma.ts";
+} from "../generated/prisma";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -111,11 +111,7 @@ export class UsuarioService {
     });
   }
 
-  // Criação do método para login dos usuários
 
-  public async login(email: string, senha: string) {
-
-  }
 
 }
 
