@@ -14,23 +14,10 @@ export class UsuarioController {
     res: Response
   ): Promise<Response> {
     try {
-      const dadosCompletos: criarUsuarioDTO & criarContaFamiliaDTO = req.body;
-      if (
-        !dadosCompletos.email ||
-        !dadosCompletos.senha ||
-        !dadosCompletos.cpf ||
-        !dadosCompletos.nome_paciente
-      ) {
-        return res
-          .status(400)
-          .json({ message: "Dados essenciais estão faltando." });
-      }
+      const { email, senha, ...dadosPaciente } = req.body;
+      const DTOUsuario: criarUsuarioDTO = { email, senha };
+      const DTOPaciente: criarContaFamiliaDTO = dadosPaciente;
 
-      const DTOUsuario: criarUsuarioDTO = {
-        email: dadosCompletos.email,
-        senha: dadosCompletos.senha,
-      };
-      const DTOPaciente: criarContaFamiliaDTO = dadosCompletos;
       const resultado = await usuarioService.criarContaFamilia(
         DTOUsuario,
         DTOPaciente
@@ -56,25 +43,10 @@ export class UsuarioController {
     res: Response
   ): Promise<Response> {
     try {
-      const dadosCompletos: criarUsuarioDTO & criarContaProfissionalDTO =
-        req.body;
+      const { email, senha, ...dadosProfissional } = req.body;
+      const DTOUsuario: criarUsuarioDTO = { email, senha };
+      const DTOProfissional: criarContaProfissionalDTO = dadosProfissional;
 
-      if (
-        !dadosCompletos.email ||
-        !dadosCompletos.senha ||
-        !dadosCompletos.cpf ||
-        !dadosCompletos.nome
-      ) {
-        return res.status(400).json({
-          message: "Dados essenciais estão faltando.",
-        });
-      }
-
-      const DTOUsuario: criarUsuarioDTO = {
-        email: dadosCompletos.email,
-        senha: dadosCompletos.senha,
-      };
-      const DTOProfissional: criarContaProfissionalDTO = dadosCompletos;
       const resultado = await usuarioService.criarContaProfissional(
         DTOUsuario,
         DTOProfissional
