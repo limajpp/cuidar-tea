@@ -5,7 +5,11 @@ import {
 } from "../generated/prisma";
 import bcrypt from "bcrypt";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  transactionOptions:{
+    timeout: 20000,
+  },
+});
 
 interface criarContaFamiliaDTO {
   email: string;

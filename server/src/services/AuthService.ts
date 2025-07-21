@@ -33,7 +33,7 @@ export class AuthService {
     };
     const token = generateToken(tokenPayLoad);
     const {senha: _,...usuarioSemSenha} = usuario;
-    return {token,usuario: usuarioSemSenha,tipoUsuario}
+    return {tipoUsuario}
 
   }
 }
