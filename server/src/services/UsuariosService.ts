@@ -1,12 +1,10 @@
-import { PrismaClient } from "../generated/prisma";
+import prisma from "../config/prismaClient";
 import hashPassword from "../utils/passwordutils";
 import {
   criarUsuarioDTO,
   criarContaProfissionalDTO,
   criarContaFamiliaDTO,
 } from "../DTOs/usuarioDTO";
-
-const prisma = new PrismaClient();
 
 export class UsuarioService {
   public async criarContaFamilia(
