@@ -1,5 +1,5 @@
 import prisma from "../config/prismaClient";
-import hashPassword from "../utils/passwordutils";
+import hashPassword from "../utils/password";
 import {
   criarUsuarioDTO,
   criarContaProfissionalDTO,
