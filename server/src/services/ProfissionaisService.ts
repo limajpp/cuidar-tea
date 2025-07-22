@@ -1,35 +1,37 @@
-import prisma from "../config/prismaClient";
-import horariosDeTrabalhoDTO from "../DTOs/profissionalDTO";
+import { PrismaClient } from "../generated/prisma";
+import { timeStringToDate } from "../utils/time";
+import { HorariosTrabalhoDTO } from "../validators/profissionaisValidator";
+
+const prisma = new PrismaClient();
 
 export class ProfissionalService {
-  public async incluirHorarioDeTrabalho(
+  public async atualizarGradeDeTrabalho(
     idProfissional: number,
-    DTOHorariosDeTrabalho: horariosDeTrabalhoDTO
+    gradeDeTrabalho: HorariosTrabalhoDTO[]
   ) {
-    const horarioExistente = await prisma.horarios_trabalho.findFirst({
-      where: {
-        dia_semana: DTOHorariosDeTrabalho.dia_semana,
-        horario_inicio: DTOHorariosDeTrabalho.horario_inicio,
-        horario_fim: DTOHorariosDeTrabalho.horario_fim,
-      },
-    });
-    if (horarioExistente) throw new Error("Esse horário já está cadastrado.");
-
     return prisma.$transaction(async (tx) => {
-      const novoHorario = await tx.horarios_trabalho.create({
-        data: {
-          dia_semana: DTOHorariosDeTrabalho.dia_semana,
-          horario_inicio: DTOHorariosDeTrabalho.horario_inicio,
-          horario_fim: DTOHorariosDeTrabalho.horario_fim,
-          profissionais: {
-            connect: {
-              id_profissional: idProfissional,
-            },
-          },
+      await tx.horarios_trabalho.deleteMany({
+        where: {
+          profissionais_id_profissional: idProfissional,
         },
       });
 
-      return { horario: novoHorario };
+      const novosHorariosData = gradeDeTrabalho.map((horario) => ({
+        profissionais_id_profissional: idProfissional,
+        dia_semana: horario.dia_semana,
+        horario_inicio: timeStringToDate(horario.horario_inicio),
+        horario_fim: timeStringToDate(horario.horario_fim),
+      }));
+
+      await tx.horarios_trabalho.createMany({
+        data: novosHorariosData,
+      });
+
+      return tx.horarios_trabalho.findMany({
+        where: {
+          profissionais_id_profissional: idProfissional,
+        },
+      });
     });
   }
 }
