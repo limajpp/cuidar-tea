@@ -1,11 +1,11 @@
 import { PrismaClient } from "../generated/prisma";
 import bcrypt from "bcrypt";
-import { generateToken } from "../config/jwt";
+import { generateToken } from "../utils/jwt";
 
 const prisma = new PrismaClient();
 
 export class AuthService {
-  // Criação do método para login dos usuários
+  // Criação do método para login dos usuários.
   public async login(email: string, senha: string) {
     const usuario = await prisma.usuarios.findUnique({
       where: { email },
@@ -26,12 +26,11 @@ export class AuthService {
     }
 
     const tokenPayLoad = {
-      id: usuario.id_usuario,
+      id_usuario: usuario.id_usuario,
       email: usuario.email,
       tipoUsuario,
     };
     const token = generateToken(tokenPayLoad);
-    const { senha: _, ...usuarioSemSenha } = usuario;
-    return { tipoUsuario };
+    return { tipoUsuario, token };
   }
 }
