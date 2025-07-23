@@ -14,4 +14,8 @@ profissionaisRoutes.post(
   (req, res) => profissionalController.atualizarGradeDeTrabalho(req, res)
 );
 
+profissionaisRoutes.get("/:id/disponibilidade", (req, res) =>
+  profissionalController.buscarDisponibilidade(req, res)
+);
+
 export default profissionaisRoutes;

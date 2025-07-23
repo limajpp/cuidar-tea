@@ -12,12 +12,10 @@ export class ProfissionalController {
     try {
       const idProfissional = req.usuario?.id_profissional;
       if (!idProfissional) {
-        return res
-          .status(403)
-          .json({
-            message:
-              "Acesso negado. Apenas profissionais podem realizar esta ação.",
-          });
+        return res.status(403).json({
+          message:
+            "Acesso negado. Apenas profissionais podem realizar esta ação.",
+        });
       }
 
       const gradeDeTrabalho: HorariosTrabalhoDTO[] = req.body;
@@ -34,6 +32,44 @@ export class ProfissionalController {
       return res
         .status(500)
         .json({ message: "Ocorreu um erro interno no servidor." });
+    }
+  }
+
+  public async buscarDisponibilidade(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    try {
+      const idProfissional = parseInt(req.params.id);
+      if (isNaN(idProfissional)) {
+        return res
+          .status(400)
+          .json({ message: "ID do profissional inválido." });
+      }
+      const dataString = req.query.data as string;
+      if (!dataString) {
+        return res
+          .status(400)
+          .json({ message: "O parâmetro 'data' é obrigatório." });
+      }
+      const [ano, mes, dia] = dataString.split("-").map(Number);
+      const data = new Date(ano, mes - 1, dia);
+      if (isNaN(data.getTime())) {
+        return res
+          .status(400)
+          .json({ message: "Formato de data inválido. Use AAAA-MM-DD." });
+      }
+
+      const disponibilidade = await profissionalService.calcularDisponibilidade(
+        idProfissional,
+        data
+      );
+      return res.status(200).json(disponibilidade);
+    } catch (error: any) {
+      console.error("Erro ao buscar disponibilidade:", error);
+      return res.status(500).json({
+        message: "Ocorreu um erro interno ao processar sua solicitação.",
+      });
     }
   }
 }
