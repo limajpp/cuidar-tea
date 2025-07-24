@@ -109,15 +109,15 @@ agendamentosRoutes.post(
  *       '200':
  *         description: Avaliação adicionada com sucesso.
  *       '400':
- *         description: Requisição inválida (ex: agendamento não está finalizado).
+ *         description: "Requisição inválida (ex: agendamento não está finalizado)."
  *       '401':
- *         description: Não autorizado (token inválido).
+ *         description: "Não autorizado (token inválido)."
  *       '403':
- *         description: Acesso negado (tentando avaliar a consulta de outra pessoa).
+ *         description: "Acesso negado (tentando avaliar a consulta de outra pessoa)."
  *       '404':
- *         description: Agendamento não encontrado.
+ *         description: "Agendamento não encontrado."
  *       '409':
- *         description: Conflito (o agendamento já foi avaliado).
+ *         description: "Conflito (o agendamento já foi avaliado)."
  */
 agendamentosRoutes.patch(
   "/:id/avaliar",
