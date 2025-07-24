@@ -15,6 +15,7 @@ export class AgendamentosService {
         profissionais_id_profissional:
           dadosAgendamento.profissionais_id_profissional,
         data_horario_inicio: dataHoraInicio,
+        status: "AGENDADO",
       },
     });
     if (conflitoExistente) {
