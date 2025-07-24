@@ -3,6 +3,7 @@ import { AgendamentosController } from "../controllers/AgendamentosController";
 import { authMiddleware } from "../middlewares/auth";
 import validate from "../middlewares/validate";
 import { criarAgendamentoSchema } from "../validators/agendamentosValidator";
+import { avaliarAgendamentoSchema } from "../validators/agendamentosValidator";
 
 const agendamentosRoutes = Router();
 const agendamentosController = new AgendamentosController();
@@ -69,6 +70,60 @@ agendamentosRoutes.post(
   authMiddleware,
   validate(criarAgendamentoSchema),
   (req, res) => agendamentosController.criarAgendamento(req, res)
+);
+
+/**
+ * @swagger
+ * /api/agendamentos/{id}/avaliar:
+ *   patch:
+ *     summary: Adiciona uma avaliação a um agendamento concluído
+ *     tags: [Agendamentos]
+ *     description: Permite que um paciente logado adicione uma nota e um comentário a um agendamento com status 'FINALIZADO'. Requer autenticação.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: O ID do agendamento a ser avaliado.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nota_atendimento
+ *             properties:
+ *               nota_atendimento:
+ *                 type: number
+ *                 description: Nota de 1 a 5.
+ *                 example: 5
+ *               avaliacao:
+ *                 type: string
+ *                 description: Comentário de texto (opcional).
+ *                 example: "Excelente profissional, muito atencioso."
+ *     responses:
+ *       '200':
+ *         description: Avaliação adicionada com sucesso.
+ *       '400':
+ *         description: Requisição inválida (ex: agendamento não está finalizado).
+ *       '401':
+ *         description: Não autorizado (token inválido).
+ *       '403':
+ *         description: Acesso negado (tentando avaliar a consulta de outra pessoa).
+ *       '404':
+ *         description: Agendamento não encontrado.
+ *       '409':
+ *         description: Conflito (o agendamento já foi avaliado).
+ */
+agendamentosRoutes.patch(
+  "/:id/avaliar",
+  authMiddleware,
+  validate(avaliarAgendamentoSchema),
+  (req, res) => agendamentosController.adicionarAvaliacao(req, res)
 );
 
 export default agendamentosRoutes;

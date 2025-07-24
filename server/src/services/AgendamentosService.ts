@@ -1,5 +1,6 @@
 import { PrismaClient } from "../generated/prisma";
 import { CriarAgendamentoDTO } from "../validators/agendamentosValidator";
+import { AvaliarAgendamentoDTO } from "../validators/agendamentosValidator";
 
 const prisma = new PrismaClient();
 
@@ -39,5 +40,43 @@ export class AgendamentosService {
     });
 
     return novoAgendamento;
+  }
+
+  public async adicionarAvaliacao(
+    idAgendamento: number,
+    idPaciente: number,
+    dadosAvaliacao: AvaliarAgendamentoDTO
+  ) {
+    const agendamento = await prisma.agendamentos.findUnique({
+      where: { id_agendamento: idAgendamento },
+    });
+    if (!agendamento) {
+      throw new Error("Agendamento não encontrado.");
+    }
+    if (agendamento.pacientes_id_paciente !== idPaciente) {
+      throw new Error(
+        "Acesso negado. Você só pode avaliar seus próprios agendamentos."
+      );
+    }
+    if (agendamento.status !== "FINALIZADO") {
+      throw new Error(
+        "Apenas agendamentos com status 'FINALIZADO' podem ser avaliados."
+      );
+    }
+    if (agendamento.nota_atendimento !== null) {
+      throw new Error("Este agendamento já foi avaliado anteriormente.");
+    }
+
+    const agendamentoAtualizado = await prisma.agendamentos.update({
+      where: {
+        id_agendamento: idAgendamento,
+      },
+      data: {
+        nota_atendimento: dadosAvaliacao.nota_atendimento,
+        avaliacao: dadosAvaliacao.avaliacao,
+      },
+    });
+
+    return agendamentoAtualizado;
   }
 }

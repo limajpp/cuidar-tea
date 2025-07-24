@@ -18,6 +18,25 @@ export const criarAgendamentoSchema = z.object({
   }),
 });
 
+export const avaliarAgendamentoSchema = z.object({
+  body: z.object({
+    nota_atendimento: z
+      .number()
+      .min(1, "A nota deve ser no mínimo 1.")
+      .max(5, "A nota deve ser no máximo 5."),
+    avaliacao: z.string().optional(), // O feedback da avaliacao é opcional.
+  }),
+  params: z.object({
+    id: z.string().refine((val) => !isNaN(parseInt(val, 10)), {
+      message: "O ID do agendamento na URL deve ser um número.",
+    }),
+  }),
+});
+
 export type CriarAgendamentoDTO = z.infer<
   typeof criarAgendamentoSchema
+>["body"];
+
+export type AvaliarAgendamentoDTO = z.infer<
+  typeof avaliarAgendamentoSchema
 >["body"];
