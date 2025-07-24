@@ -126,4 +126,37 @@ agendamentosRoutes.patch(
   (req, res) => agendamentosController.adicionarAvaliacao(req, res)
 );
 
+/**
+ * @swagger
+ * /api/agendamentos/{id}/finalizar:
+ *   patch:
+ *     summary: Finaliza um agendamento
+ *     tags: [Agendamentos]
+ *     description: Altera o status de um agendamento de 'AGENDADO' para 'FINALIZADO'. Requer autenticação do paciente ou do profissional da consulta.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: O ID do agendamento a ser finalizado.
+ *     responses:
+ *       '200':
+ *         description: "Agendamento finalizado com sucesso."
+ *       '400':
+ *         description: "Requisição inválida (ex: agendamento não estava agendado)."
+ *       '401':
+ *         description: "Não autorizado (token inválido)."
+ *       '403':
+ *         description: "Acesso negado (usuário não faz parte da consulta)."
+ *       '404':
+ *         description: "Agendamento não encontrado."
+ */
+
+agendamentosRoutes.patch("/:id/finalizar", authMiddleware, (req, res) =>
+  agendamentosController.finalizarAgendamento(req, res)
+);
+
 export default agendamentosRoutes;

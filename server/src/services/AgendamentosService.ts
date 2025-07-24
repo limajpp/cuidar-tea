@@ -79,4 +79,47 @@ export class AgendamentosService {
 
     return agendamentoAtualizado;
   }
+
+  public async finalizarAgendamento(
+    idAgendamento: number,
+    idUsuarioLogado: number
+  ) {
+    const agendamento = await prisma.agendamentos.findUnique({
+      where: { id_agendamento: idAgendamento },
+      include: {
+        pacientes: { select: { usuarios_id_usuario: true } },
+        profissionais: { select: { usuarios_id_usuario: true } },
+      },
+    });
+    if (!agendamento) {
+      throw new Error("Agendamento não encontrado.");
+    }
+
+    const isPaciente =
+      agendamento.pacientes.usuarios_id_usuario === idUsuarioLogado;
+    const isProfissional =
+      agendamento.profissionais.usuarios_id_usuario === idUsuarioLogado;
+    if (!isPaciente && !isProfissional) {
+      throw new Error(
+        "Acesso negado. Você não tem permissão para modificar este agendamento."
+      );
+    }
+
+    if (agendamento.status !== "AGENDADO") {
+      throw new Error(
+        "Apenas agendamentos com status 'AGENDADO' podem ser finalizados."
+      );
+    }
+
+    const agendamentoFinalizado = await prisma.agendamentos.update({
+      where: {
+        id_agendamento: idAgendamento,
+      },
+      data: {
+        status: "FINALIZADO",
+      },
+    });
+
+    return agendamentoFinalizado;
+  }
 }
