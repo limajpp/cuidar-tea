@@ -47,7 +47,7 @@ const agendamentosController = new AgendamentosController();
  *                 type: string
  *                 format: date-time
  *                 description: A data e hora de início da consulta no formato ISO 8601.
- *                 example: "2025-08-20T14:00:00"
+ *                 example: "2025-08-20T14:00:00.000Z"
  *               duracao_consulta_minutos:
  *                 type: integer
  *                 description: A duração da consulta em minutos.
