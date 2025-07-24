@@ -109,4 +109,37 @@ export class AgendamentosController {
       return res.status(500).json({ message: "Ocorreu um erro interno." });
     }
   }
+
+  public async cancelarAgendamento(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    try {
+      const idAgendamento = parseInt(req.params.id);
+      const idUsuarioLogado = req.usuario?.id_usuario;
+      if (!idUsuarioLogado) {
+        return res.status(401).json({ message: "Usuário não autenticado." });
+      }
+
+      const resultado = await agendamentosService.cancelarAgendamento(
+        idAgendamento,
+        idUsuarioLogado
+      );
+
+      return res.status(200).json(resultado);
+    } catch (error: any) {
+      if (error.message.includes("não encontrado")) {
+        return res.status(404).json({ message: error.message });
+      }
+      if (error.message.includes("Acesso negado")) {
+        return res.status(403).json({ message: error.message });
+      }
+      if (error.message.includes("Não é possível cancelar")) {
+        return res.status(400).json({ message: error.message });
+      }
+
+      console.error("Erro ao cancelar agendamento:", error);
+      return res.status(500).json({ message: "Ocorreu um erro interno." });
+    }
+  }
 }

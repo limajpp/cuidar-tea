@@ -159,4 +159,37 @@ agendamentosRoutes.patch("/:id/finalizar", authMiddleware, (req, res) =>
   agendamentosController.finalizarAgendamento(req, res)
 );
 
+/**
+ * @swagger
+ * /api/agendamentos/{id}/cancelar:
+ *   patch:
+ *     summary: Cancela um agendamento
+ *     tags: [Agendamentos]
+ *     description: Altera o status de um agendamento de 'AGENDADO' para 'CANCELADO'. Requer autenticação do paciente ou do profissional da consulta.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: O ID do agendamento a ser cancelado.
+ *     responses:
+ *       '200':
+ *         description: "Agendamento cancelado com sucesso."
+ *       '400':
+ *         description: "Requisição inválida (ex: agendamento já estava finalizado)."
+ *       '401':
+ *         description: "Não autorizado (token inválido)."
+ *       '403':
+ *         description: "Acesso negado (usuário não faz parte da consulta)."
+ *       '404':
+ *         description: "Agendamento não encontrado."
+ */
+
+agendamentosRoutes.patch("/:id/cancelar", authMiddleware, (req, res) =>
+  agendamentosController.cancelarAgendamento(req, res)
+);
+
 export default agendamentosRoutes;

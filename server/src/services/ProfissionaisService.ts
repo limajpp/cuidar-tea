@@ -57,6 +57,7 @@ export class ProfissionalService {
           gte: new Date(data.setHours(0, 0, 0, 0)),
           lt: new Date(data.setHours(23, 59, 59, 999)),
         },
+        status: "AGENDADO",
       },
     });
 

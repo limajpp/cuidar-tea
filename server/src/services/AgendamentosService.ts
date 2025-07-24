@@ -122,4 +122,47 @@ export class AgendamentosService {
 
     return agendamentoFinalizado;
   }
+
+  public async cancelarAgendamento(
+    idAgendamento: number,
+    idUsuarioLogado: number
+  ) {
+    const agendamento = await prisma.agendamentos.findUnique({
+      where: { id_agendamento: idAgendamento },
+      include: {
+        pacientes: { select: { usuarios_id_usuario: true } },
+        profissionais: { select: { usuarios_id_usuario: true } },
+      },
+    });
+    if (!agendamento) {
+      throw new Error("Agendamento não encontrado.");
+    }
+
+    const isPaciente =
+      agendamento.pacientes.usuarios_id_usuario === idUsuarioLogado;
+    const isProfissional =
+      agendamento.profissionais.usuarios_id_usuario === idUsuarioLogado;
+
+    if (!isPaciente && !isProfissional) {
+      throw new Error(
+        "Acesso negado. Você não tem permissão para cancelar este agendamento."
+      );
+    }
+    if (agendamento.status !== "AGENDADO") {
+      throw new Error(
+        `Não é possível cancelar um agendamento com status '${agendamento.status}'.`
+      );
+    }
+
+    const agendamentoCancelado = await prisma.agendamentos.update({
+      where: {
+        id_agendamento: idAgendamento,
+      },
+      data: {
+        status: "CANCELADO",
+      },
+    });
+
+    return agendamentoCancelado;
+  }
 }
