@@ -143,3 +143,5 @@ const useCadastroLocal = () => {
 };
 
 export default useCadastroLocal;
+
+
