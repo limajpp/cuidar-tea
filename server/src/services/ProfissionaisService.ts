@@ -162,4 +162,27 @@ export class ProfissionalService {
 
     return profissionalSemFoto;
   }
+
+  public async atualizarStatusConvenio(
+    idProfissional: number,
+    aceitaConvenio: boolean
+  ) {
+    const profissional = await prisma.profissionais.findUnique({
+      where: { id_profissional: idProfissional },
+    });
+    if (!profissional) {
+      throw new Error("Perfil de profissional não encontrado.");
+    }
+
+    const profissionalAtualizado = await prisma.profissionais.update({
+      where: {
+        id_profissional: idProfissional,
+      },
+      data: {
+        aceita_convenio: aceitaConvenio,
+      },
+    });
+
+    return profissionalAtualizado;
+  }
 }

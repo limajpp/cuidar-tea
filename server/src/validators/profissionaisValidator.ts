@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+export const atualizarConvenioSchema = z.object({
+  body: z.object({
+    aceita_convenio: z.boolean(),
+  }),
+});
+
 export const horariosTrabalhoSchema = z
   .object({
     dia_semana: z
@@ -31,3 +37,6 @@ export const criarGradeSchema = z.object({
 });
 
 export type HorariosTrabalhoDTO = z.infer<typeof horariosTrabalhoSchema>;
+export type AtualizarConvenioDTO = z.infer<
+  typeof atualizarConvenioSchema
+>["body"];

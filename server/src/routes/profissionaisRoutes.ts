@@ -1,11 +1,10 @@
-// Local do arquivo: src/routes/profissionaisRoutes.ts
-
 import { Router } from "express";
 import { ProfissionalController } from "../controllers/ProfissionaisController";
 import validate from "../middlewares/validate";
 import { authMiddleware } from "../middlewares/auth";
 import upload from "../config/imgUpload";
 import { criarGradeSchema } from "../validators/profissionaisValidator";
+import { atualizarConvenioSchema } from "../validators/profissionaisValidator";
 
 const profissionaisRoutes = Router();
 const profissionalController = new ProfissionalController();
@@ -159,6 +158,44 @@ profissionaisRoutes.patch(
 
 profissionaisRoutes.delete("/foto-perfil", authMiddleware, (req, res) =>
   profissionalController.removerFotoPerfil(req, res)
+);
+
+/**
+ * @swagger
+ * /api/profissionais/convenio-status:
+ *   patch:
+ *     summary: Atualiza o status de aceite de convênio do profissional
+ *     tags: [Profissionais]
+ *     description: Permite que um profissional logado altere se ele aceita ou não convênios.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               aceita_convenio:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       '200':
+ *         description: Status atualizado com sucesso.
+ *       '400':
+ *         description: "Dado inválido (ex: não é um booleano)."
+ *       '401':
+ *         description: Não autorizado.
+ *       '403':
+ *         description: Acesso negado.
+ */
+
+
+profissionaisRoutes.patch(
+  "/convenio-status",
+  authMiddleware,
+  validate(atualizarConvenioSchema),
+  (req, res) => profissionalController.atualizarStatusConvenio(req, res)
 );
 
 export default profissionaisRoutes;
