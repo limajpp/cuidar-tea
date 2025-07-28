@@ -1,5 +1,6 @@
 import { PrismaClient } from "../generated/prisma";
 import { timeStringToDate } from "../utils/time";
+import { v2 as cloudinary } from "cloudinary";
 import { HorariosTrabalhoDTO } from "../validators/profissionaisValidator";
 
 const prisma = new PrismaClient();
@@ -102,5 +103,63 @@ export class ProfissionalService {
     });
 
     return slotsDisponiveis;
+  }
+
+  public async atualizarFotoPerfil(idProfissional: number, urlDaFoto: string) {
+    const profissional = await prisma.profissionais.findUnique({
+      where: { id_profissional: idProfissional },
+    });
+
+    if (!profissional) {
+      throw new Error("Perfil de profissional não encontrado.");
+    }
+
+    const profissionalAtualizado = await prisma.profissionais.update({
+      where: {
+        id_profissional: idProfissional,
+      },
+      data: {
+        foto_perfil_url: urlDaFoto,
+      },
+    });
+
+    return profissionalAtualizado;
+  }
+
+  public async removerFotoPerfil(idProfissional: number) {
+    const profissional = await prisma.profissionais.findUnique({
+      where: { id_profissional: idProfissional },
+      select: { foto_perfil_url: true },
+    });
+    if (!profissional) {
+      throw new Error("Perfil de profissional não encontrado.");
+    }
+
+    if (profissional.foto_perfil_url) {
+      try {
+        // Extrai o "public_id" da URL. Ex: "cuidar-tea/fotos-perfil/nome_arquivo".
+        const publicId = profissional.foto_perfil_url
+          .split("/")
+          .slice(-3)
+          .join("/")
+          .split(".")[0];
+
+        await cloudinary.uploader.destroy(publicId);
+      } catch (error) {
+        console.error("Erro ao deletar a imagem antiga do Cloudinary:", error);
+        // Mesmo que falhe a deleção no Cloudinary, continuamos para limpar o banco.
+      }
+    }
+
+    const profissionalSemFoto = await prisma.profissionais.update({
+      where: {
+        id_profissional: idProfissional,
+      },
+      data: {
+        foto_perfil_url: null,
+      },
+    });
+
+    return profissionalSemFoto;
   }
 }

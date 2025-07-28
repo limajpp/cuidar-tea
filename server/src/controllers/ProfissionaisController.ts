@@ -72,4 +72,62 @@ export class ProfissionalController {
       });
     }
   }
+
+  public async atualizarFotoPerfil(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    try {
+      const idProfissional = req.usuario?.id_profissional;
+      if (!idProfissional) {
+        return res.status(403).json({ message: "Acesso negado." });
+      }
+      if (!req.file) {
+        return res
+          .status(400)
+          .json({ message: "Nenhum arquivo de imagem foi enviado." });
+      }
+
+      const urlDaFoto = (req.file as any).path || (req.file as any).url;
+      const resultado = await profissionalService.atualizarFotoPerfil(
+        idProfissional,
+        urlDaFoto
+      );
+
+      return res.status(200).json(resultado);
+    } catch (error: any) {
+      console.error(
+        "Erro ao atualizar foto de perfil:",
+        error.message || error
+      );
+      return res.status(500).json({
+        message: "Ocorreu um erro interno no servidor.",
+        error: error.message || error,
+      });
+    }
+  }
+
+  public async removerFotoPerfil(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    try {
+      const idProfissional = req.usuario?.id_profissional;
+      if (!idProfissional) {
+        return res.status(403).json({ message: "Acesso negado." });
+      }
+
+      const resultado = await profissionalService.removerFotoPerfil(
+        idProfissional
+      );
+
+      return res.status(200).json(resultado);
+    } catch (error: any) {
+      if (error.message.includes("não encontrado")) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error("Erro ao remover foto de perfil:", error);
+      return res.status(500).json({ message: "Ocorreu um erro interno." });
+    }
+  }
 }

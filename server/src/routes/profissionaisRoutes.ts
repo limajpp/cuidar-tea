@@ -4,6 +4,7 @@ import { Router } from "express";
 import { ProfissionalController } from "../controllers/ProfissionaisController";
 import validate from "../middlewares/validate";
 import { authMiddleware } from "../middlewares/auth";
+import upload from "../config/imgUpload";
 import { criarGradeSchema } from "../validators/profissionaisValidator";
 
 const profissionaisRoutes = Router();
@@ -98,6 +99,66 @@ profissionaisRoutes.post(
  */
 profissionaisRoutes.get("/:id/disponibilidade", (req, res) =>
   profissionalController.buscarDisponibilidade(req, res)
+);
+
+/**
+ * @swagger
+ * /api/profissionais/foto-perfil:
+ *   patch:
+ *     summary: Atualiza a foto de perfil do profissional logado
+ *     tags: [Profissionais]
+ *     description: Faz o upload de uma nova imagem e atualiza a foto de perfil do profissional. Requer autenticação.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               foto:
+ *                 type: string
+ *                 format: binary
+ *                 description: O arquivo de imagem a ser enviado.
+ *     responses:
+ *       '200':
+ *         description: Foto de perfil atualizada com sucesso.
+ *       '400':
+ *         description: Nenhum arquivo enviado.
+ *       '401':
+ *         description: Não autorizado.
+ */
+
+profissionaisRoutes.patch(
+  "/foto-perfil",
+  authMiddleware,
+  upload.single("foto"),
+  (req, res) => profissionalController.atualizarFotoPerfil(req, res)
+);
+
+/**
+ * @swagger
+ * /api/profissionais/foto-perfil:
+ *   delete:
+ *     summary: Remove a foto de perfil do profissional logado
+ *     tags: [Profissionais]
+ *     description: Deleta a imagem do Cloudinary e limpa a URL no banco de dados. Requer autenticação.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Foto de perfil removida com sucesso.
+ *       '401':
+ *         description: Não autorizado.
+ *       '403':
+ *         description: Acesso negado.
+ *       '404':
+ *         description: Perfil de profissional não encontrado.
+ */
+
+profissionaisRoutes.delete("/foto-perfil", authMiddleware, (req, res) =>
+  profissionalController.removerFotoPerfil(req, res)
 );
 
 export default profissionaisRoutes;
