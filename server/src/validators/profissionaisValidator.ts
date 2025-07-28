@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+export const atualizarDescricaoSchema = z.object({
+  body: z.object({
+    descricao: z.string().nullable().optional(),
+  }),
+});
+
 export const atualizarValorConsultaSchema = z.object({
   body: z.object({
     valor_consulta: z
@@ -50,4 +56,7 @@ export type AtualizarConvenioDTO = z.infer<
 >["body"];
 export type AtualizarValorConsultaDTO = z.infer<
   typeof atualizarValorConsultaSchema
+>["body"];
+export type AtualizarDescricaoDTO = z.infer<
+  typeof atualizarDescricaoSchema
 >["body"];

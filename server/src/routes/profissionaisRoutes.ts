@@ -6,6 +6,7 @@ import upload from "../config/imgUpload";
 import { criarGradeSchema } from "../validators/profissionaisValidator";
 import { atualizarConvenioSchema } from "../validators/profissionaisValidator";
 import { atualizarValorConsultaSchema } from "../validators/profissionaisValidator";
+import { atualizarDescricaoSchema } from "../validators/profissionaisValidator";
 
 const profissionaisRoutes = Router();
 const profissionalController = new ProfissionalController();
@@ -129,7 +130,6 @@ profissionaisRoutes.get("/:id/disponibilidade", (req, res) =>
  *       '401':
  *         description: Não autorizado.
  */
-
 profissionaisRoutes.patch(
   "/foto-perfil",
   authMiddleware,
@@ -156,7 +156,6 @@ profissionaisRoutes.patch(
  *       '404':
  *         description: Perfil de profissional não encontrado.
  */
-
 profissionaisRoutes.delete("/foto-perfil", authMiddleware, (req, res) =>
   profissionalController.removerFotoPerfil(req, res)
 );
@@ -190,7 +189,6 @@ profissionaisRoutes.delete("/foto-perfil", authMiddleware, (req, res) =>
  *       '403':
  *         description: Acesso negado.
  */
-
 profissionaisRoutes.patch(
   "/convenio-status",
   authMiddleware,
@@ -233,6 +231,42 @@ profissionaisRoutes.patch(
   authMiddleware,
   validate(atualizarValorConsultaSchema),
   (req, res) => profissionalController.atualizarValorConsulta(req, res)
+);
+
+/**
+ * @swagger
+ * /api/profissionais/descricao:
+ *   patch:
+ *     summary: Atualiza a descrição (biografia) do profissional
+ *     tags: [Profissionais]
+ *     description: Permite que um profissional logado altere sua descrição de perfil.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               descricao:
+ *                 type: string
+ *                 example: "Sou um profissional com mais de 10 anos de experiência..."
+ *     responses:
+ *       '200':
+ *         description: Descrição atualizada com sucesso.
+ *       '400':
+ *         description: Dado inválido.
+ *       '401':
+ *         description: Não autorizado.
+ *       '403':
+ *         description: Acesso negado.
+ */
+profissionaisRoutes.patch(
+  "/descricao",
+  authMiddleware,
+  validate(atualizarDescricaoSchema),
+  (req, res) => profissionalController.atualizarDescricao(req, res)
 );
 
 export default profissionaisRoutes;

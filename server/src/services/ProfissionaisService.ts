@@ -208,4 +208,27 @@ export class ProfissionalService {
 
     return profissionalAtualizado;
   }
+
+  public async atualizarDescricao(
+    idProfissional: number,
+    descricao: string | null | undefined
+  ) {
+    const profissional = await prisma.profissionais.findUnique({
+      where: { id_profissional: idProfissional },
+    });
+    if (!profissional) {
+      throw new Error("Perfil de profissional não encontrado.");
+    }
+
+    const profissionalAtualizado = await prisma.profissionais.update({
+      where: {
+        id_profissional: idProfissional,
+      },
+      data: {
+        descricao: descricao,
+      },
+    });
+
+    return profissionalAtualizado;
+  }
 }
