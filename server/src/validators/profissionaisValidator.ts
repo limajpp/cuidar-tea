@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+export const atualizarValorConsultaSchema = z.object({
+  body: z.object({
+    valor_consulta: z
+      .number()
+      .positive("O valor da consulta deve ser um número positivo."),
+  }),
+});
+
 export const atualizarConvenioSchema = z.object({
   body: z.object({
     aceita_convenio: z.boolean(),
@@ -39,4 +47,7 @@ export const criarGradeSchema = z.object({
 export type HorariosTrabalhoDTO = z.infer<typeof horariosTrabalhoSchema>;
 export type AtualizarConvenioDTO = z.infer<
   typeof atualizarConvenioSchema
+>["body"];
+export type AtualizarValorConsultaDTO = z.infer<
+  typeof atualizarValorConsultaSchema
 >["body"];

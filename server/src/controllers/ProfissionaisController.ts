@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ProfissionalService } from "../services/ProfissionaisService";
 import { HorariosTrabalhoDTO } from "../validators/profissionaisValidator";
 import { AtualizarConvenioDTO } from "../validators/profissionaisValidator";
+import { AtualizarValorConsultaDTO } from "../validators/profissionaisValidator";
 
 const profissionalService = new ProfissionalService();
 
@@ -154,6 +155,32 @@ export class ProfissionalController {
         return res.status(404).json({ message: error.message });
       }
       console.error("Erro ao atualizar status de convênio:", error);
+      return res.status(500).json({ message: "Ocorreu um erro interno." });
+    }
+  }
+
+  public async atualizarValorConsulta(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    try {
+      const idProfissional = req.usuario?.id_profissional;
+      if (!idProfissional) {
+        return res.status(403).json({ message: "Acesso negado." });
+      }
+
+      const { valor_consulta } = req.body as AtualizarValorConsultaDTO;
+      const resultado = await profissionalService.atualizarValorConsulta(
+        idProfissional,
+        valor_consulta
+      );
+
+      return res.status(200).json(resultado);
+    } catch (error: any) {
+      if (error.message.includes("não encontrado")) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error("Erro ao atualizar valor da consulta:", error);
       return res.status(500).json({ message: "Ocorreu um erro interno." });
     }
   }

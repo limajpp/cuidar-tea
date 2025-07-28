@@ -5,6 +5,7 @@ import { authMiddleware } from "../middlewares/auth";
 import upload from "../config/imgUpload";
 import { criarGradeSchema } from "../validators/profissionaisValidator";
 import { atualizarConvenioSchema } from "../validators/profissionaisValidator";
+import { atualizarValorConsultaSchema } from "../validators/profissionaisValidator";
 
 const profissionaisRoutes = Router();
 const profissionalController = new ProfissionalController();
@@ -190,12 +191,48 @@ profissionaisRoutes.delete("/foto-perfil", authMiddleware, (req, res) =>
  *         description: Acesso negado.
  */
 
-
 profissionaisRoutes.patch(
   "/convenio-status",
   authMiddleware,
   validate(atualizarConvenioSchema),
   (req, res) => profissionalController.atualizarStatusConvenio(req, res)
+);
+
+/**
+ * @swagger
+ * /api/profissionais/valor-consulta:
+ *   patch:
+ *     summary: Atualiza o valor da consulta do profissional
+ *     tags: [Profissionais]
+ *     description: Permite que um profissional logado altere o valor padrão de suas consultas.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               valor_consulta:
+ *                 type: number
+ *                 format: float
+ *                 example: 150.50
+ *     responses:
+ *       '200':
+ *         description: Valor da consulta atualizado com sucesso.
+ *       '400':
+ *         description: "Dado inválido (ex: não é um número)."
+ *       '401':
+ *         description: Não autorizado.
+ *       '403':
+ *         description: Acesso negado.
+ */
+profissionaisRoutes.patch(
+  "/valor-consulta",
+  authMiddleware,
+  validate(atualizarValorConsultaSchema),
+  (req, res) => profissionalController.atualizarValorConsulta(req, res)
 );
 
 export default profissionaisRoutes;
