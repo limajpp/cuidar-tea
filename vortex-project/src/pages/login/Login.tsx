@@ -10,21 +10,43 @@ const Login: React.FC = () => {
     const [alertMessage, setAlertMessage] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-        setTimeout(() => {
-            if (email === 'teste@email.com' && password === '123456') {
-                setAlertType('success');
-                setAlertMessage('Login realizado com sucesso!');
-            } else {
-                setAlertType('danger');
-                setAlertMessage('Email ou senha incorretos!');
-            }
-            setShowAlert(true);
-            setLoading(false);
-        }, 1500);
-    };
+    try {
+        const response = await fetch('http://localhost:25060/api/usuarios/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, senha: password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Login realizado
+            setAlertType('success');
+            setAlertMessage('Login realizado com sucesso!');
+            
+            // Store token in localStorage for future requests********
+            localStorage.setItem('token', data.data.token);
+            localStorage.setItem('userType', data.data.tipoUsuario);
+            
+            
+        } else {
+
+            setAlertType('danger');
+            setAlertMessage(data.message || 'Email ou senha incorretos!');
+        }
+    } catch (error) {
+        setAlertType('danger');
+        setAlertMessage('Erro de conexão. Tente novamente.');
+    }
+
+    setShowAlert(true);
+    setLoading(false);
+};
 
     return (
 
