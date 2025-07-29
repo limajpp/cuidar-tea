@@ -211,4 +211,28 @@ export class ProfissionalController {
       return res.status(500).json({ message: "Ocorreu um erro interno." });
     }
   }
+
+  public async listarPacientesAtivos(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    try {
+      const idProfissional = req.usuario?.id_profissional;
+      if (!idProfissional) {
+        return res.status(403).json({
+          message:
+            "Acesso negado. Apenas profissionais podem realizar esta ação.",
+        });
+      }
+
+      const pacientes = await profissionalService.listarPacientesAtivos(
+        idProfissional
+      );
+
+      return res.status(200).json(pacientes);
+    } catch (error: any) {
+      console.error("Erro ao listar pacientes ativos:", error);
+      return res.status(500).json({ message: "Ocorreu um erro interno." });
+    }
+  }
 }

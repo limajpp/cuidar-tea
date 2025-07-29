@@ -231,4 +231,33 @@ export class ProfissionalService {
 
     return profissionalAtualizado;
   }
+
+  public async listarPacientesAtivos(idProfissional: number) {
+    const agendamentosAtivos = await prisma.agendamentos.findMany({
+      where: {
+        profissionais_id_profissional: idProfissional,
+        status: "AGENDADO",
+      },
+      select: {
+        pacientes_id_paciente: true,
+      },
+    });
+
+    const idsDosPacientes = [
+      ...new Set(agendamentosAtivos.map((ag) => ag.pacientes_id_paciente)),
+    ];
+    if (idsDosPacientes.length === 0) {
+      return [];
+    }
+
+    const pacientes = await prisma.pacientes.findMany({
+      where: {
+        id_paciente: {
+          in: idsDosPacientes,
+        },
+      },
+    });
+
+    return pacientes;
+  }
 }

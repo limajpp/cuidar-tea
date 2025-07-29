@@ -269,4 +269,26 @@ profissionaisRoutes.patch(
   (req, res) => profissionalController.atualizarDescricao(req, res)
 );
 
+/**
+ * @swagger
+ * /api/profissionais/pacientes-ativos:
+ *   get:
+ *     summary: Lista os pacientes ativos de um profissional
+ *     tags: [Profissionais]
+ *     description: Retorna uma lista de todos os pacientes que possuem uma consulta com status 'AGENDADO' com o profissional logado. Requer autenticação.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Lista de pacientes retornada com sucesso.
+ *       '401':
+ *         description: Não autorizado.
+ *       '403':
+ *         description: Acesso negado.
+ */
+
+profissionaisRoutes.get("/pacientes-ativos", authMiddleware, (req, res) =>
+  profissionalController.listarPacientesAtivos(req, res)
+);
+
 export default profissionaisRoutes;
