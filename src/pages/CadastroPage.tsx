@@ -63,7 +63,7 @@ export default function CadastroPage() {
     nomePaciente: "",
     dataNascimentoPaciente: "",
     nivelTsaPaciente: "N_VEL_1",
-    cpfPaciente: "", // Campo adicionado para o CPF do paciente
+    cpfPaciente: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -131,7 +131,7 @@ export default function CadastroPage() {
         e_titular: eTitular,
         nome_titular: !eTitular ? formData.nomeCompleto : null,
         nome_paciente: eTitular ? formData.nomeCompleto : formData.nomePaciente,
-        // Lógica de CPF corrigida
+        // Lógica de CPF
         cpf: eTitular ? formData.cpf.replace(/\D/g, '') : formData.cpfPaciente.replace(/\D/g, ''),
         data_nascimento: formData.dataNascimentoPaciente,
         nivel_tea: formData.nivelTsaPaciente,
