@@ -142,4 +142,30 @@ export class AgendamentosController {
       return res.status(500).json({ message: "Ocorreu um erro interno." });
     }
   }
+
+  public async listarMeusAgendamentos(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    try {
+      const idPaciente = req.usuario?.id_paciente;
+      if (!idPaciente) {
+        return res.status(403).json({
+          message:
+            "Acesso negado. Nenhum perfil de paciente encontrado para este usuário.",
+        });
+      }
+
+      const resultado = await agendamentosService.listarAgendamentosPorPaciente(
+        idPaciente
+      );
+
+      return res.status(200).json(resultado);
+    } catch (error: any) {
+      console.error("Erro ao listar agendamentos do paciente:", error);
+      return res.status(500).json({
+        message: "Ocorreu um erro interno ao processar sua solicitação.",
+      });
+    }
+  }
 }

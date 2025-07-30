@@ -154,7 +154,6 @@ agendamentosRoutes.patch(
  *       '404':
  *         description: "Agendamento não encontrado."
  */
-
 agendamentosRoutes.patch("/:id/finalizar", authMiddleware, (req, res) =>
   agendamentosController.finalizarAgendamento(req, res)
 );
@@ -187,9 +186,29 @@ agendamentosRoutes.patch("/:id/finalizar", authMiddleware, (req, res) =>
  *       '404':
  *         description: "Agendamento não encontrado."
  */
-
 agendamentosRoutes.patch("/:id/cancelar", authMiddleware, (req, res) =>
   agendamentosController.cancelarAgendamento(req, res)
+);
+
+/**
+ * @swagger
+ * /api/agendamentos/meus:
+ *   get:
+ *     summary: Lista os agendamentos do paciente logado
+ *     tags: [Agendamentos]
+ *     description: Retorna um histórico de todas as consultas agendadas pelo paciente que está autenticado. Requer autenticação de paciente.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Lista de agendamentos retornada com sucesso.
+ *       '401':
+ *         description: Não autorizado (token inválido ou não fornecido).
+ *       '403':
+ *         description: Acesso negado (usuário logado não é um paciente).
+ */
+agendamentosRoutes.get("/meus", authMiddleware, (req, res) =>
+  agendamentosController.listarMeusAgendamentos(req, res)
 );
 
 export default agendamentosRoutes;

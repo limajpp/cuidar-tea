@@ -166,4 +166,39 @@ export class AgendamentosService {
 
     return agendamentoCancelado;
   }
+
+  public async listarAgendamentosPorPaciente(idPaciente: number) {
+    const agendamentos = await prisma.agendamentos.findMany({
+      where: {
+        pacientes_id_paciente: idPaciente,
+        status: "AGENDADO",
+      },
+      orderBy: {
+        data_horario_inicio: "asc",
+      },
+      include: {
+        profissionais: {
+          select: {
+            nome: true,
+            foto_perfil_url: true,
+          },
+        },
+        enderecos: {
+          select: {
+            logradouro: true,
+            numero: true,
+            cidade: true,
+            estado: true,
+            apelido_endereco: true,
+          },
+        },
+      },
+    });
+
+    if (!agendamentos) {
+      return [];
+    }
+
+    return agendamentos;
+  }
 }
