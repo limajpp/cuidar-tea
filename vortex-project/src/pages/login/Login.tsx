@@ -52,7 +52,7 @@ const Login: React.FC = () => {
 
 
 
-        <div className="flex-col mb-10">
+        <div className="flex-col mb-10 mt-50">
             <div>
                 <h2 className="text-center mb-4 fw-bold fs-1">Bem-vindo!</h2>
                 <h3 className="text-center mb-4 text-secundary fs-5">Entre na sua conta Cuidar TEA</h3>
