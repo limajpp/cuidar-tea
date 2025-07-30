@@ -111,7 +111,9 @@ const Login: React.FC = () => {
                                     </Button>
                                 </Form>
                             </Card.Body>
-                            <a href="" className="mt-3 fs-6">Cadastre-se</a>
+                            <div className="d-flex justify-content-center">
+                            <a href="/Register" className="mt-2 mb-4 fs-6">Cadastre-se</a>
+                            </div>
                         </Card>
                     </Col>
                 </Row>
