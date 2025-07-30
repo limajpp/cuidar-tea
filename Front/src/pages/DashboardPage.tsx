@@ -1,8 +1,8 @@
 import React from 'react';
 import Navbar from '../components/layout/Navbar';
-import FeaturedProfessionals from '../components/dashboard/FeaturedProfessionals';
-import SearchProfessionals from '../components/dashboard/SearchProfessionals';
-import TipOfTheDay from '../components/dashboard/TipOfTheDay';
+import FeaturedProfessionals from '../components/dashboard/FeaturedProfissional';
+import SearchProfessionals from '../components/dashboard/Pesquisa';
+import TipOfTheDay from '../components/dashboard/DicaDoDia';
 
 const UpcomingAppointments = () => (
     <div className="bg-white p-6 rounded-lg shadow-md">
