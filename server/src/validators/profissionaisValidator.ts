@@ -1,5 +1,17 @@
 import { z } from "zod";
 
+export const buscarProfissionaisSchema = z.object({
+  query: z.object({
+    especialidade: z.string().optional(),
+    cidade: z.string().optional(),
+    estado: z.string().optional(),
+    aceita_convenio: z
+      .string()
+      .transform((val) => val === "true")
+      .optional(),
+  }),
+});
+
 export const atualizarDescricaoSchema = z.object({
   body: z.object({
     descricao: z.string().nullable().optional(),
@@ -60,3 +72,6 @@ export type AtualizarValorConsultaDTO = z.infer<
 export type AtualizarDescricaoDTO = z.infer<
   typeof atualizarDescricaoSchema
 >["body"];
+export type BuscarProfissionaisDTO = z.infer<
+  typeof buscarProfissionaisSchema
+>["query"];

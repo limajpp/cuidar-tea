@@ -1,7 +1,8 @@
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient, Prisma } from "../generated/prisma";
 import { timeStringToDate } from "../utils/time";
 import { v2 as cloudinary } from "cloudinary";
 import { HorariosTrabalhoDTO } from "../validators/profissionaisValidator";
+import { BuscarProfissionaisDTO } from "../validators/profissionaisValidator";
 
 const prisma = new PrismaClient();
 
@@ -259,5 +260,46 @@ export class ProfissionalService {
     });
 
     return pacientes;
+  }
+
+  public async buscarProfissionais(filtros: BuscarProfissionaisDTO) {
+    const where: Prisma.profissionaisWhereInput = {};
+
+    if (filtros.aceita_convenio !== undefined) {
+      where.aceita_convenio = filtros.aceita_convenio;
+    }
+
+    if (filtros.cidade || filtros.estado) {
+      where.enderecos = {
+        cidade: filtros.cidade ? { equals: filtros.cidade } : undefined,
+        estado: filtros.estado ? { equals: filtros.estado } : undefined,
+      };
+    }
+
+    if (filtros.especialidade) {
+      where.profissional_especialidades = {
+        some: {
+          especialidades: {
+            nome_especialidade: {
+              equals: filtros.especialidade,
+            },
+          },
+        },
+      };
+    }
+
+    const profissionais = await prisma.profissionais.findMany({
+      where,
+      include: {
+        enderecos: true,
+        profissional_especialidades: {
+          include: {
+            especialidades: true,
+          },
+        },
+      },
+    });
+
+    return profissionais;
   }
 }

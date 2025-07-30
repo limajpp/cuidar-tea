@@ -7,6 +7,7 @@ import { criarGradeSchema } from "../validators/profissionaisValidator";
 import { atualizarConvenioSchema } from "../validators/profissionaisValidator";
 import { atualizarValorConsultaSchema } from "../validators/profissionaisValidator";
 import { atualizarDescricaoSchema } from "../validators/profissionaisValidator";
+import { buscarProfissionaisSchema } from "../validators/profissionaisValidator";
 
 const profissionaisRoutes = Router();
 const profissionalController = new ProfissionalController();
@@ -289,6 +290,49 @@ profissionaisRoutes.patch(
 
 profissionaisRoutes.get("/pacientes-ativos", authMiddleware, (req, res) =>
   profissionalController.listarPacientesAtivos(req, res)
+);
+
+/**
+ * @swagger
+ * /api/profissionais:
+ *   get:
+ *     summary: Busca e filtra profissionais
+ *     tags:
+ *       - Profissionais
+ *     description: Retorna uma lista de profissionais com base nos filtros fornecidos via query params. Rota pública.
+ *     parameters:
+ *       - in: query
+ *         name: especialidade
+ *         schema:
+ *           type: string
+ *         description: >
+ *           Filtra por nome da especialidade (ex: Psicologia).
+ *       - in: query
+ *         name: cidade
+ *         schema:
+ *           type: string
+ *         description: >
+ *           Filtra pela cidade de um dos endereços do profissional.
+ *       - in: query
+ *         name: estado
+ *         schema:
+ *           type: string
+ *         description: >
+ *           Filtra pelo estado (UF) de um dos endereços do profissional.
+ *       - in: query
+ *         name: aceita_convenio
+ *         schema:
+ *           type: boolean
+ *         description: >
+ *           Filtra por profissionais que aceitam convênio (true/false).
+ *     responses:
+ *       '200':
+ *         description: Lista de profissionais retornada com sucesso.
+ *       '400':
+ *         description: Filtro com formato inválido.
+ */
+profissionaisRoutes.get("/", validate(buscarProfissionaisSchema), (req, res) =>
+  profissionalController.buscar(req, res)
 );
 
 export default profissionaisRoutes;

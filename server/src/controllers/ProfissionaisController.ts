@@ -4,6 +4,7 @@ import { HorariosTrabalhoDTO } from "../validators/profissionaisValidator";
 import { AtualizarConvenioDTO } from "../validators/profissionaisValidator";
 import { AtualizarValorConsultaDTO } from "../validators/profissionaisValidator";
 import { AtualizarDescricaoDTO } from "../validators/profissionaisValidator";
+import { BuscarProfissionaisDTO } from "../validators/profissionaisValidator";
 
 const profissionalService = new ProfissionalService();
 
@@ -233,6 +234,26 @@ export class ProfissionalController {
     } catch (error: any) {
       console.error("Erro ao listar pacientes ativos:", error);
       return res.status(500).json({ message: "Ocorreu um erro interno." });
+    }
+  }
+
+  public async buscar(req: Request, res: Response): Promise<Response> {
+    try {
+      const filtros: BuscarProfissionaisDTO = req.query;
+      if (req.query.aceita_convenio !== undefined) {
+        filtros.aceita_convenio = req.query.aceita_convenio === "true";
+      }
+
+      const profissionais = await profissionalService.buscarProfissionais(
+        filtros
+      );
+
+      return res.status(200).json(profissionais);
+    } catch (error: any) {
+      console.error("Erro ao buscar profissionais:", error);
+      return res
+        .status(500)
+        .json({ message: "Ocorreu um erro interno ao buscar profissionais." });
     }
   }
 }
