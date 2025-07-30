@@ -4,9 +4,7 @@ import validate from "../middlewares/validate";
 import { authMiddleware } from "../middlewares/auth";
 import upload from "../config/imgUpload";
 import { criarGradeSchema } from "../validators/profissionaisValidator";
-import { atualizarConvenioSchema } from "../validators/profissionaisValidator";
-import { atualizarValorConsultaSchema } from "../validators/profissionaisValidator";
-import { atualizarDescricaoSchema } from "../validators/profissionaisValidator";
+import { atualizarPerfilProfissionalSchema } from "../validators/profissionaisValidator";
 import { buscarProfissionaisSchema } from "../validators/profissionaisValidator";
 
 const profissionaisRoutes = Router();
@@ -18,6 +16,49 @@ const profissionalController = new ProfissionalController();
  *   - name: Profissionais
  *     description: Endpoints para gerenciar perfis e agendas de profissionais
  */
+
+/**
+ * @swagger
+ * /api/profissionais/perfil:
+ *   patch:
+ *     summary: Atualiza parcialmente o perfil do profissional logado
+ *     tags: [Profissionais]
+ *     description: Permite que um profissional logado altere um ou mais campos do seu perfil, como descrição, valor da consulta ou status de convênio.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               descricao:
+ *                 type: string
+ *                 example: "Nova biografia aqui."
+ *               valor_consulta:
+ *                 type: number
+ *                 example: 250.00
+ *               aceita_convenio:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       '200':
+ *         description: Perfil atualizado com sucesso.
+ *       '400':
+ *         description: Dados inválidos.
+ *       '401':
+ *         description: Não autorizado.
+ *       '403':
+ *         description: Acesso negado.
+ */
+
+profissionaisRoutes.patch(
+  "/perfil",
+  authMiddleware,
+  validate(atualizarPerfilProfissionalSchema),
+  (req, res) => profissionalController.atualizarPerfil(req, res)
+);
 
 /**
  * @swagger
@@ -163,115 +204,6 @@ profissionaisRoutes.delete("/foto-perfil", authMiddleware, (req, res) =>
 
 /**
  * @swagger
- * /api/profissionais/convenio-status:
- *   patch:
- *     summary: Atualiza o status de aceite de convênio do profissional
- *     tags: [Profissionais]
- *     description: Permite que um profissional logado altere se ele aceita ou não convênios.
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               aceita_convenio:
- *                 type: boolean
- *                 example: true
- *     responses:
- *       '200':
- *         description: Status atualizado com sucesso.
- *       '400':
- *         description: "Dado inválido (ex: não é um booleano)."
- *       '401':
- *         description: Não autorizado.
- *       '403':
- *         description: Acesso negado.
- */
-profissionaisRoutes.patch(
-  "/convenio-status",
-  authMiddleware,
-  validate(atualizarConvenioSchema),
-  (req, res) => profissionalController.atualizarStatusConvenio(req, res)
-);
-
-/**
- * @swagger
- * /api/profissionais/valor-consulta:
- *   patch:
- *     summary: Atualiza o valor da consulta do profissional
- *     tags: [Profissionais]
- *     description: Permite que um profissional logado altere o valor padrão de suas consultas.
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               valor_consulta:
- *                 type: number
- *                 format: float
- *                 example: 150.50
- *     responses:
- *       '200':
- *         description: Valor da consulta atualizado com sucesso.
- *       '400':
- *         description: "Dado inválido (ex: não é um número)."
- *       '401':
- *         description: Não autorizado.
- *       '403':
- *         description: Acesso negado.
- */
-profissionaisRoutes.patch(
-  "/valor-consulta",
-  authMiddleware,
-  validate(atualizarValorConsultaSchema),
-  (req, res) => profissionalController.atualizarValorConsulta(req, res)
-);
-
-/**
- * @swagger
- * /api/profissionais/descricao:
- *   patch:
- *     summary: Atualiza a descrição (biografia) do profissional
- *     tags: [Profissionais]
- *     description: Permite que um profissional logado altere sua descrição de perfil.
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               descricao:
- *                 type: string
- *                 example: "Sou um profissional com mais de 10 anos de experiência..."
- *     responses:
- *       '200':
- *         description: Descrição atualizada com sucesso.
- *       '400':
- *         description: Dado inválido.
- *       '401':
- *         description: Não autorizado.
- *       '403':
- *         description: Acesso negado.
- */
-profissionaisRoutes.patch(
-  "/descricao",
-  authMiddleware,
-  validate(atualizarDescricaoSchema),
-  (req, res) => profissionalController.atualizarDescricao(req, res)
-);
-
-/**
- * @swagger
  * /api/profissionais/pacientes-ativos:
  *   get:
  *     summary: Lista os pacientes ativos de um profissional
@@ -287,7 +219,6 @@ profissionaisRoutes.patch(
  *       '403':
  *         description: Acesso negado.
  */
-
 profissionaisRoutes.get("/pacientes-ativos", authMiddleware, (req, res) =>
   profissionalController.listarPacientesAtivos(req, res)
 );

@@ -3,6 +3,7 @@ import { timeStringToDate } from "../utils/time";
 import { v2 as cloudinary } from "cloudinary";
 import { HorariosTrabalhoDTO } from "../validators/profissionaisValidator";
 import { BuscarProfissionaisDTO } from "../validators/profissionaisValidator";
+import { AtualizarPerfilProfissionalDTO } from "../validators/profissionaisValidator";
 
 const prisma = new PrismaClient();
 
@@ -164,9 +165,9 @@ export class ProfissionalService {
     return profissionalSemFoto;
   }
 
-  public async atualizarStatusConvenio(
+  public async atualizarPerfil(
     idProfissional: number,
-    aceitaConvenio: boolean
+    dados: AtualizarPerfilProfissionalDTO
   ) {
     const profissional = await prisma.profissionais.findUnique({
       where: { id_profissional: idProfissional },
@@ -175,62 +176,14 @@ export class ProfissionalService {
       throw new Error("Perfil de profissional não encontrado.");
     }
 
-    const profissionalAtualizado = await prisma.profissionais.update({
+    const perfilAtualizado = await prisma.profissionais.update({
       where: {
         id_profissional: idProfissional,
       },
-      data: {
-        aceita_convenio: aceitaConvenio,
-      },
+      data: dados,
     });
 
-    return profissionalAtualizado;
-  }
-
-  public async atualizarValorConsulta(
-    idProfissional: number,
-    valorConsulta: number
-  ) {
-    const profissional = await prisma.profissionais.findUnique({
-      where: { id_profissional: idProfissional },
-    });
-    if (!profissional) {
-      throw new Error("Perfil de profissional não encontrado.");
-    }
-
-    const profissionalAtualizado = await prisma.profissionais.update({
-      where: {
-        id_profissional: idProfissional,
-      },
-      data: {
-        valor_consulta: valorConsulta,
-      },
-    });
-
-    return profissionalAtualizado;
-  }
-
-  public async atualizarDescricao(
-    idProfissional: number,
-    descricao: string | null | undefined
-  ) {
-    const profissional = await prisma.profissionais.findUnique({
-      where: { id_profissional: idProfissional },
-    });
-    if (!profissional) {
-      throw new Error("Perfil de profissional não encontrado.");
-    }
-
-    const profissionalAtualizado = await prisma.profissionais.update({
-      where: {
-        id_profissional: idProfissional,
-      },
-      data: {
-        descricao: descricao,
-      },
-    });
-
-    return profissionalAtualizado;
+    return perfilAtualizado;
   }
 
   public async listarPacientesAtivos(idProfissional: number) {

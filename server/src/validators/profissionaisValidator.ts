@@ -12,23 +12,15 @@ export const buscarProfissionaisSchema = z.object({
   }),
 });
 
-export const atualizarDescricaoSchema = z.object({
+export const atualizarPerfilProfissionalSchema = z.object({
   body: z.object({
     descricao: z.string().nullable().optional(),
-  }),
-});
-
-export const atualizarValorConsultaSchema = z.object({
-  body: z.object({
     valor_consulta: z
       .number()
-      .positive("O valor da consulta deve ser um número positivo."),
-  }),
-});
-
-export const atualizarConvenioSchema = z.object({
-  body: z.object({
-    aceita_convenio: z.boolean(),
+      .positive("O valor da consulta deve ser um número positivo.")
+      .nullable()
+      .optional(),
+    aceita_convenio: z.boolean().optional(),
   }),
 });
 
@@ -63,14 +55,8 @@ export const criarGradeSchema = z.object({
 });
 
 export type HorariosTrabalhoDTO = z.infer<typeof horariosTrabalhoSchema>;
-export type AtualizarConvenioDTO = z.infer<
-  typeof atualizarConvenioSchema
->["body"];
-export type AtualizarValorConsultaDTO = z.infer<
-  typeof atualizarValorConsultaSchema
->["body"];
-export type AtualizarDescricaoDTO = z.infer<
-  typeof atualizarDescricaoSchema
+export type AtualizarPerfilProfissionalDTO = z.infer<
+  typeof atualizarPerfilProfissionalSchema
 >["body"];
 export type BuscarProfissionaisDTO = z.infer<
   typeof buscarProfissionaisSchema
