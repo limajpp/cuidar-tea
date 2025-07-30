@@ -1,10 +1,20 @@
 import './index.css'
-import CadastroPage from './pages/CAdastroPage'
+import DashboardPage from './pages/DashboardPage';
+import CadastroPage from './pages/CadastroPage'
 
-function App() {
+/*function App() {
   return (
     <CadastroPage />
   )
 }
 
-export default App
+export default App*/
+
+
+function App() {
+  return (
+    <DashboardPage />
+  );
+}
+
+export default App;
