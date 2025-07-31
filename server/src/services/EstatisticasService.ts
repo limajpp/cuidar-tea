@@ -3,7 +3,7 @@ import prisma from "../config/prismaClient";
 
 export class EstatisticasService {
   public async getQuantidadeProfissionais(): Promise<number> {
-    return prisma.usuarios.count();
+    return prisma.profissionais.count();
   }
 
   public async getQuantidadePacientes(): Promise<number> {
